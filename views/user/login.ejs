@@ -1,0 +1,37 @@
+<% layout('layout') %>
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+    <% include ../partials/navSL %>  
+    <div class="container">
+        <br/>
+        <div class="text-center reg_msg">
+            <h2 class="fancy"><span>Welcome Back</span></h2>
+        </div><br>
+        
+            <div class="text-center reg_msg">
+            <h2 class="fancy"><span>LOG IN</span></h2>
+        </div><br><br><br>
+
+        <div class="row login">
+            <form method="POST" action="/login">
+
+                <div class="form-group input_group">
+                    <input id="email" class="form-control" name="email" type="text" autocomplete="on" placeholder="EMAIL" style="margin-bottom:20px;">
+                </div>
+
+                <div class="form-group input_group">
+                    <input id="password" class="form-control" name="password" type="password" placeholder="PASSWORD" style="margin-bottom:20px;">
+                </div>
+
+
+                <div class="form-group">
+                    <input type="submit" id="login" value="LOG IN" class="form-control btn btn-primary" name="login" style="">
+                </div>
+
+              </form>
+
+              <div>
+                  <h4>Don't have an account? <a href="/signup">SignUp</a></h4>
+              </div>
+        </div>
+    </div>
+</body>
