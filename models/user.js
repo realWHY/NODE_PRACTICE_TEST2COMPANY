@@ -17,4 +17,8 @@ userSchema.methods.encryptPassword = (password)=>{
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10),null);
 }
 
+userSchema.methods.ValidPassword = function(password){
+    return bcrypt.compareSync(password, this.password);
+}
+
 module.exports = mongoose.model('User',userSchema); //('name','schema')  modelize, this has the ability to operate db      

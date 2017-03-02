@@ -14,6 +14,7 @@ passport.deserializeUser((id, done)=>{
     });
 });
 
+//sign up
 passport.use('local.signup', new localStrategy({//('name', object)
     usernameField: 'email',
     passwordField: 'password',
@@ -25,7 +26,7 @@ passport.use('local.signup', new localStrategy({//('name', object)
         }
 
         if(user){//if user already exist
-            return done(null,false);
+            return done(null,false, req.flash('error', 'User already exist'));
         }
         else{
             var newUser = new User();
@@ -37,5 +38,26 @@ passport.use('local.signup', new localStrategy({//('name', object)
                 return done(null, newUser);
             });
         }
+    })// check if email alredy esist?
+}));
+
+//log in
+passport.use('local.login', new localStrategy({//('name', object)
+    usernameField: 'email',
+    passwordField: 'password',
+    passReqToCallback: true //pass all data to the callback below
+},(req, email, password, done)=>{
+    User.findOne({'email':email},(err, user)=>{
+        if(err){//connect failure, db doesn't exist .....etc
+            return done(err);
+        }
+
+        var messages = [];
+        if(!user || !user.ValidPassword(password)){//if user already exist
+            messages.push('Email does not exists or Password is invalid');
+            return done(null,false, req.flash('error', messages));
+        }
+        
+        return done(null, user);
     })// check if email alredy esist?
 }));

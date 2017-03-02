@@ -1,6 +1,7 @@
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var validator = require('express-validator');
 var ejs = require('ejs');
 var engine = require('ejs-mate');
 var session = require('express-session');
@@ -12,6 +13,7 @@ var flash = require('connect-flash'); // if some error happen, it can show them
 
 var app = express();
 
+mongoose.Promise = global.Promise;// http://majing.io/questions/540
 mongoose.connect('mongodb://localhost/webtest'); //db name
 
 require('./config/passport');
@@ -22,7 +24,9 @@ app.set('view engine', 'ejs');
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-console.log(bodyParser);
+
+app.use(validator()); // after body-parser
+
 app.use(session({
     secret:'ThisismytestKey',
     resave:false,

@@ -12,6 +12,15 @@
         </div><br><br><br>
 
         <div class="row login">
+            
+            <% if(hasErrors) { %>
+                <% for(var i=0; i<messages.length; i++){ %>
+                    <div class = "alert alert-danger alert-dismissable">
+                        <%= messages[i] %>
+                    </div>
+                <% } %>
+            <% } %>
+            
             <form method="POST" action="/login">
 
                 <div class="form-group input_group">
