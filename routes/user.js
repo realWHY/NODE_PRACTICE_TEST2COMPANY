@@ -7,8 +7,12 @@ var secret = require('../secret/secret');
 
 module.exports = (app, passport) => {
     app.get('/', function(req, res, next){
-        res.render('index',{title:'Home Page'});
-        next();
+        if(req.session.cookie.originalMaxAge !== null){
+            res.redirect('/home');
+        }
+        else{
+            res.render('index',{title:'Home Page'});
+        }
     }) ;
     
     app.get('/signup',(req,res)=>{
@@ -33,10 +37,19 @@ module.exports = (app, passport) => {
     });
     
      app.post('/login', loginValidate, passport.authenticate('local.login',{//first validate, if pass, the next enable authenticate to execute
-        successRedirect:'/home',
+//        successRedirect:'/home',
         failureRedirect:'/login',
         failureFlash: true // when the error message is added, it willbe dispayes to user
-    }));//local.signup name from passport
+    }), (req,res) =>{
+         console.log('req.body.rememberme  '+req.body.rememberme);
+         if(req.body.rememberme){
+            req.session.cookie.maxAge = 30*24*60*60*1000; // 30 days
+        }else{
+            req.session.cookie.expires = null;
+        }
+        console.log('req.session.cookie.maxAge  '+req.session.cookie.maxAge);
+        res.redirect('/home');
+    });//local.signup name from passport
     
     app.get('/home',(req,res)=>{
         console.log('listening ........home');
