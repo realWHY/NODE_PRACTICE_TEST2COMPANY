@@ -108,7 +108,7 @@ section.contact_content
 }
 
 /* signup form */
-.signup, .login{
+.signup, .login, .reset, .forgot{
     text-align: center;
     width: 60%;
     height: auto;

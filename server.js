@@ -17,6 +17,7 @@ mongoose.Promise = global.Promise;// http://majing.io/questions/540
 mongoose.connect('mongodb://localhost/webtest'); //db name
 
 require('./config/passport');
+require('./secret/secret');
 
 app.use(express.static('public'));
 app.engine('ejs',engine);

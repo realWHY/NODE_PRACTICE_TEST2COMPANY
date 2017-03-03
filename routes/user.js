@@ -1,3 +1,9 @@
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+var async = require('async');
+var crypto = require('crypto');
+var User = require('../models/user');
+var secret = require('../secret/secret');
 
 module.exports = (app, passport) => {
     app.get('/', function(req, res, next){
@@ -32,8 +38,158 @@ module.exports = (app, passport) => {
         failureFlash: true // when the error message is added, it willbe dispayes to user
     }));//local.signup name from passport
     
-     app.get('/home',(req,res)=>{
+    app.get('/home',(req,res)=>{
+        console.log('listening ........home');
         res.render('user/home');
+    });
+    
+    app.get('/forgot',(req,res)=>{
+        console.log('listening ........forgot');
+        var errors = req.flash('error');
+        var info = req.flash('info');
+        res.render('user/forgot',{title: 'Request Password Reset', messages: errors, hasErrors:errors.length>0, info: info, noErrors:info.length>0});
+    });
+    
+    app.post('/forgot', (req,res,next)=>{
+       async.waterfall([
+           // generate random token
+           function(callback){
+               crypto.randomBytes(20,(err,buf)=>{//the data will be saved in the buf
+                    var rand = buf.toString('hex'); 
+                    callback(err,rand);
+               });
+           },
+           
+           // check if email is valid
+           function(rand, callback){
+               User.findOne({'email':req.body.email},(err,user)=>{//if email is exist, store it in user variable
+                    if(!user){
+                        req.flash('error','Eamil is invalid');
+                        return res.redirect('/forgot')
+                    }else{
+                        user.passwordResetToken = rand;
+                        user.passwordResetExpires = Date.now()+60*60*1000; //ms
+                        user.save((err)=>{
+                            callback(err, rand, user);
+                        })
+                    }                  
+               });
+           },
+           
+           //send email to user
+           function(rand, user, callback){
+               var smtpTransport = nodemailer.createTransport({
+                   service:'Gmail',
+                   auth:{
+                       user:secret.auth.user,
+                       pass:secret.auth.pass
+                   }
+               });
+               var mailOptions = {
+                   to: user.email,
+                   from: 'WebTest'+'<'+secret.auth.user+'>',
+                   subject: 'Reset Token',
+                   text: 'you receive reset token \n\n'+
+                   'please click on the link \n\n'+
+                   'http://localhost:3000/reset/'+rand+'\n\n'
+               };
+               smtpTransport.sendMail(mailOptions, (err, response) =>{
+                    req.flash('info', 'A password reset token has been sent to '+user.email);
+                   return callback(err, user);
+               });
+           }
+       ], (err) =>{
+           if(err){
+               return next(err);
+           }
+           else{
+               res.redirect('/forgot');
+           }    
+       }) 
+    });
+    
+    app.get('/reset/:token',(req, res) =>{
+        User.findOne({passwordResetToken:req.params.token, passwordResetExpires:
+        {$gt:Date.now()}},(err,user)=>{
+            if(!user){
+                req.flash('error', 'Password reset token has expired');
+                return res.redirect('/forgot');
+            }  
+            else{     
+                var error = req.flash('error');
+                var success = req.flash('success');
+                    
+                res.render('user/reset', {title: 'Reset Your Password', messages: error, hasErrors: error.length > 0, success:success, noErrors:success.length > 0});
+        }
+        });  
+    });
+    
+    app.post('/reset/:token',(req,res)=>{
+        async.waterfall([
+            function(callback){
+                User.findOne({passwordResetToken:req.params.token, passwordResetExpires:{$gt:Date.now()}},(err,user)=>{
+                    if(!user){
+                        req.flash('error', 'Password reset token has expired');
+                        return res.redirect('/forgot');
+                    }  
+                    else{  
+                        req.checkBody('password', 'Password is required').notEmpty();
+                        req.checkBody('password', 'Password must not less than five').isLength({min:5});
+                        
+                        var errors = req.validationErrors();
+                        
+                        if(req.body.password == req.body.cpassword){
+                            if(errors){
+                                var messages = [];
+                                errors.forEach((error)=>{
+                                    messages.push(error.msg);
+                                })
+                                
+                                var errors = req.flash('error', messages);
+                                res.redirect('/reset/'+req.params.token);
+                            }
+                            else{
+                                user.password = user.encryptPassword(req.body.password);
+                                user.passwordResetToken = undefined;
+                                user.passwordResetExpires = undefined;
+                                user.save((err)=>{
+                                    req.flash('success', 'Password updated successfully');
+                                    callback(err,user);
+                                })
+                            }
+                        }
+                        else{
+                            req.flash('error', 'Password and confirm password are not equal');
+                            res.redirect('/reset/'+req.params.token);
+                        }
+                    }
+                });  
+            },
+            
+            function(user, callback){
+                var smtpTransport = nodemailer.createTransport({
+                   service:'Gmail',
+                   auth:{
+                       user:secret.auth.user,
+                       pass:secret.auth.pass
+                   }
+                });
+                var mailOptions = {
+                   to: user.email,
+                   from: 'WebTest'+'<'+secret.auth.user+'>',
+                   subject: 'Reset password successfully',
+                   text: 'your password is updated successfully !'
+                };
+                smtpTransport.sendMail(mailOptions, (err, response) =>{
+                    callback(err,user);
+                    
+                    var error = req.flash('error');
+                    var success = req.flash('success');
+                    
+                    res.render('user/reset', {title: 'Reset Your Password', messages: error, hasErrors: error.length > 0, success:success, noErrors:success.length > 0});
+                });             
+            }         
+        ]);
     });
 }
 
