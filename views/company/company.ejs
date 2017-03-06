@@ -11,16 +11,16 @@
        
         <div class="container-fluid main_body">
             
-            <<div class="ul_links">
+            <div class="ul_links">
                 <ul>
-                    <li><a href="/home">Home</a></li>
-                    <li><a href="">Company</a></li>
+                    <li><a href="/home">Home</a></li> |
+                    <li><a href="">Company</a></li> |
                     <li><a href="#">Register Company</a></li>
                 </ul>
             </div>
             
             <div class="bodyDiv">
-                <h4>Resgister Company</h4>
+                <h4>Register Company</h4>
                 
                     <form method="POST" action="/company/create">
 
@@ -70,9 +70,8 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <button type="button" class="close" 
-                                            id = "close" data-dismiss="modal"
-                                            >&times;</button>
+                                             <button type="button" id="close" class="close" data-dismiss="modal">&times;</button>
+                                            <div class="modal-title">Upload Image</div>
                                         </div>
                                         <div class="modal-body">
                                             <div class="row">
@@ -80,18 +79,17 @@
                                                     <div class="progress-bar" role="progressbar"></div>
                                                 </div>
                                                  <button class="btn btn-lg upload-btn" type="button">Upload file</button>
-                                                 <input type="file" name="upload" id="" class="form-control" id ="upload-input" style="display:none">
+                                                 <input type="file" name="upload" id="upload-input" class="form-control"  style="display:none">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                          
                         <div class="form-group">
                             <input type="submit" id="register" value="Register" class="form-control btn btn-primary" name="register" style="">
                         </div>
 
-                </form>
+                    </form>
             </div>
         </div>
     </div>
