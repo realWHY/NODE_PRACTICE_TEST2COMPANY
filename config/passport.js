@@ -2,6 +2,7 @@
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 var User = require('../models/user');
+var secret = require('../secret/secret');
 
 //https://cnodejs.org/topic/568dfdb9c2289f51658f0871
 passport.serializeUser((user, done)=>{ //(object, callback)
@@ -57,7 +58,6 @@ passport.use('local.login', new localStrategy({//('name', object)
             messages.push('Email does not exists or Password is invalid');
             return done(null,false, req.flash('error', messages));
         }
-        
         return done(null, user);
     })// check if email alredy esist?
 }));

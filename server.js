@@ -41,6 +41,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 require('./routes/user')(app, passport); // give route info
+require('./routes/company')(app); // give route info
 
 app.listen(3000, function(){
     console.log('listening ........');

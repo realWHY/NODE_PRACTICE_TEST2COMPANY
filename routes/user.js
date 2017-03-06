@@ -42,7 +42,6 @@ module.exports = (app, passport) => {
         failureFlash: true // when the error message is added, it willbe dispayes to user
     }), (req,res) =>{
          console.log('req.body.rememberme  '+req.body.rememberme);
-         req.logout();
          if(req.body.rememberme){
             req.session.cookie.maxAge = 30*24*60*60*1000; // 30 days
         }else{
@@ -54,7 +53,8 @@ module.exports = (app, passport) => {
     
     app.get('/home',(req,res)=>{
         console.log('listening ........home');
-        res.render('user/home');
+        console.log(req.user)
+        res.render('user/home', {title: 'Home || RateMe', user: req.user});
     });
     
     app.get('/forgot',(req,res)=>{
