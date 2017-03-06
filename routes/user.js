@@ -42,6 +42,7 @@ module.exports = (app, passport) => {
         failureFlash: true // when the error message is added, it willbe dispayes to user
     }), (req,res) =>{
          console.log('req.body.rememberme  '+req.body.rememberme);
+         req.logout();
          if(req.body.rememberme){
             req.session.cookie.maxAge = 30*24*60*60*1000; // 30 days
         }else{
@@ -204,6 +205,12 @@ module.exports = (app, passport) => {
             }         
         ]);
     });
+    app.get('/logout',(req,res)=>{
+        req.logout();
+        req.session.destroy((err)=>{
+            res.redirect('/');
+        })
+    })
 }
 
 function signupValidate(req,res,next){
