@@ -19,6 +19,17 @@
                 </ul>
             </div>
             
+            <% if(noErrors) {%>
+                <div class="alert alert-success">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">
+                        &times;
+                    </a>
+                    <%= success %>
+
+                </div>
+            <% } %>
+                
+                
             <div class="bodyDiv">
                 <h4>Register Company</h4>
                 
