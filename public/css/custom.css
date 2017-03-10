@@ -130,6 +130,25 @@ input[type="submit"]{
 
 
 /* company */
+.main_body{
+    margin: 0;
+    padding: 0;
+}
+
+.main_body h1{
+    color: #73879C;
+    font-size: 46px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.main_body p{
+    color: #73879C;
+    font-size: 18px;
+    font-weight: normal;
+    text-align: center;
+}
+
 #colDesc{
     margin: 50px 20px 0px 70px;
     padding-top: 40px;
