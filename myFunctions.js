@@ -7,5 +7,3 @@ var arrayAverage = (arr) => {
 }
 
 module.exports = {arrayAverage};
-
-

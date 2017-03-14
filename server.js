@@ -9,7 +9,8 @@ var mongoose = require('mongoose');
 var MongoStore = require('connect-mongo')(session); //session will be destroyed without it if refresh page
 var passport = require('passport'); // use for validation
 var flash = require('connect-flash'); // if some error happen, it can show them
-
+var _ = require('underscore');
+var moment = require('moment');
 
 var app = express();
 
@@ -40,9 +41,19 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.locals._ = _; 
+//or 
+//var golbalvars = (req,res,next)=>{
+//res.locals._=_;
+//}
+//app.use(golbalvars)
+
+app.locals.moment = moment;
+
 require('./routes/user')(app, passport); // give route info
 require('./routes/company')(app); // give route info
 require('./routes/review')(app); // give route info
+require('./routes/message')(app); // give route info
 
 app.listen(3000, function(){
     console.log('listening ........');

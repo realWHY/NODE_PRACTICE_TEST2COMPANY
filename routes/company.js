@@ -135,4 +135,28 @@ module.exports = (app)=>{
         });       
     });
     
+    app.get('/companies/leaderboard',(req,res)=>{
+        Company.find({},(err,result)=>{
+            console.log('result',result);
+             res.render('company/leaderboard',{title:'All Companies leaderboard', user:req.user, data:result});//-1 means sort from high to low
+        }).sort({'ratingSum':-1});//return array, if want to use find method without any criteria, passing the empty array. the found data will be saved in data      
+    });
+    
+    app.get('/company/search', (req, res) => {
+        res.render('company/search', {title: 'Find a Company', user:req.user});
+    });
+    
+    app.post('/company/search', (req, res) => {
+        var name = req.body.search;
+        var regex = new RegExp(name, 'i');
+        
+        Company.find({'$or': [{'name':regex}]}, (err, data) => {
+            if(err){
+                console.log(err);
+            }
+            
+            res.redirect('/company-profile/'+data[0]._id);
+        });
+    });
+    
 }
